@@ -6,6 +6,7 @@ using System.Text;
 
 namespace MarkovTest
 {
+    // TODO: Figure out how to do more depth, so we can look at the previous X words to select the next one.
     public class MarkovNode
     {
         public MarkovNode(string word)
@@ -18,7 +19,6 @@ namespace MarkovTest
         public string Word { get; private set;  }
         public Dictionary<string, int> Next { get; private set; }
         private int _totalNext;
-
 
         public void AddNext(string word)
         {
@@ -37,20 +37,22 @@ namespace MarkovTest
                 if (idx <= 0)
                     return kvp.Key;
             }
-            throw new Exception("Whoops");
+            throw new Exception("No children for " + Word);
         }
     }
 
     public class MarkovChain
     {
+        private readonly int _depth;
         // TODO: Instead of keeping special symbols like this, use child chains. When we see a
         // paragraph-start, enter the paragraph child chain and generate until paragraph end. Likewise
         // for sentence-start and sentence-stop, quote-start and quote-stop, etc.
 
         public Tokenizer Tokenizer;
 
-        public MarkovChain()
+        public MarkovChain(int depth)
         {
+            _depth = depth;
             Tokenizer = new Tokenizer();
             Nodes = new Dictionary<string, MarkovNode>();
             Nodes.Add(Constants.SentenceStart, new MarkovNode(Constants.SentenceStart));
@@ -65,33 +67,27 @@ namespace MarkovTest
 
         public void Train(string text)
         {
+            RingBuffer buffer = new RingBuffer(_depth);
             IEnumerable<string> tokens = Tokenizer.Tokenize(text);
-            MarkovNode currentNode = GetNode(Constants.SentenceStart);
+            IEnumerator<string> enumerator = tokens.GetEnumerator();
+            enumerator.MoveNext();
+            string token = enumerator.Current;
 
-            foreach (string t in tokens.Skip(1))
+            MarkovNode currentNode = GetNode(token);
+
+            while(enumerator.MoveNext())
             {
-                if (t == Constants.SentenceStart)
-                {
-                    currentNode = GetNode(Constants.SentenceStart);
-                    continue;
-                }
+                // Get the next node.
+                token = enumerator.Current;
+                MarkovNode node = GetNode(token);
 
-                if (t == Constants.TextEnd)
-                {
-                    currentNode.AddNext(Constants.TextEnd);
-                    currentNode = GetNode(Constants.SentenceStart);
-                    continue;
-                    // This should be the end
-                }
+                // Point the current node to the next node
+                buffer.Add(token);
+                string key = buffer.GetKey();
+                //string key = token;
+                currentNode.AddNext(key);
 
-                if (t == Constants.ParagraphBreak)
-                {
-                    currentNode.AddNext(Constants.ParagraphBreak);
-                    continue;
-                }
-
-                MarkovNode node = GetNode(t);
-                currentNode.AddNext(node.Word);
+                // Update the current node
                 currentNode = node;
             }
         }
@@ -138,17 +134,24 @@ namespace MarkovTest
 
         private IEnumerable<string> GenerateSentenceInternalFrom(MarkovNode start)
         {
+            //RingBuffer buffer = new RingBuffer(_depth);
             MarkovNode current = start;
+            //buffer.Add(start.Word);
             while (true)
             {
                 // TODO: If the character is a quote, comma or semi-colon, the previous word should
                 // be used instead
-                string nextWord = current.GetRandomNext();
-                if (nextWord == Constants.SentenceBreak || nextWord == Constants.ParagraphBreak || nextWord == Constants.TextEnd)
+                string nextKey = current.GetRandomNext();
+                if (nextKey == Constants.SentenceBreak || nextKey == Constants.ParagraphBreak || nextKey == Constants.TextEnd)
                     break;
 
-                yield return nextWord;
-                current = GetNode(nextWord);
+                string word = nextKey.Split('|').First();
+
+                yield return word;
+                //buffer.Add(word);
+                //string key = buffer.GetKey();
+                string key = word;
+                current = GetNode(key);
             }
         }
     }
@@ -162,10 +165,10 @@ namespace MarkovTest
             //Console.WriteLine(text);
             //foreach (string token in new Tokenizer().Tokenize(text))
             //    Console.WriteLine(token);
-            MarkovChain chain = new MarkovChain();
+            MarkovChain chain = new MarkovChain(2);
             chain.Train(text);
-            string s = chain.Dump();
-            File.WriteAllText("outfile.txt", s);
+            string dump = chain.Dump();
+            File.WriteAllText("outfile.txt", dump);
             //while (true)
             //{
             //    char c = Console.ReadKey().KeyChar;
