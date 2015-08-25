@@ -6,36 +6,135 @@ using System.Text;
 
 namespace MarkovTest
 {
-    // TODO: Figure out how to do more depth, so we can look at the previous X words to select the next one.
     public class MarkovNode
     {
+        private class NextWordList
+        {
+            public NextWordList()
+            {
+                Words = new Dictionary<string, int>();
+                Prefixes = new Dictionary<string, NextWordList>();
+                TotalNext = 0;
+            }
+
+            public Dictionary<string, int> Words { get; private set; }
+            public Dictionary<string, NextWordList> Prefixes { get; private set; }
+            public int TotalNext { get; set; }
+
+            public void AddWord(string word)
+            {
+                if (!Words.ContainsKey(word))
+                    Words.Add(word, 0);
+
+                Words[word]++;
+                TotalNext++;
+            }
+
+            public string GetRandom()
+            {
+                if (TotalNext == 0)
+                    return null;
+
+                int idx = RandomHelper.Get(TotalNext) + 1;
+                foreach (KeyValuePair<string, int> kvp in Words)
+                {
+                    idx = idx - kvp.Value;
+                    if (idx <= 0)
+                        return kvp.Key;
+                }
+                return null;
+            }
+        }
+
         public MarkovNode(string word)
         {
             Word = word;
-            Next = new Dictionary<string, int>();
-            _totalNext = 0;
+            _next = new NextWordList();
         }
 
         public string Word { get; private set;  }
-        public Dictionary<string, int> Next { get; private set; }
-        private int _totalNext;
+        private readonly NextWordList _next;
 
-        public void AddNext(string word)
+        private List<NextWordList> CreateNextWordListChain(IList<string> prefix)
         {
-            if (!Next.ContainsKey(word))
-                Next.Add(word, 0);
-            Next[word]++;
-            _totalNext++;
+            if (prefix == null)
+                return new List<NextWordList> { _next };
+
+            /* For a prefix "I love cats and", and word  "dogs"
+             * We want a chain starting from _next for the following:
+             * "I love cats and" -> "dogs"
+             * "love cats and" -> "dogs"
+             * "cats and" -> "dogs"
+             * "and" -> "dogs"
+             * "" -> "dogs"
+             * */
+            List<NextWordList> chain = new List<NextWordList>(prefix.Count);
+
+            for (int i = 0; i < prefix.Count; i++)
+            {
+                NextWordList next = _next;
+                for (int j = i; j < prefix.Count; j++)
+                {
+                    string p = prefix[j];
+                    if (!next.Prefixes.ContainsKey(p))
+                        next.Prefixes.Add(p, new NextWordList());
+                    next = next.Prefixes[p];
+                    chain.Add(next);
+                }
+            }
+            chain.Add(_next);
+            return chain;
         }
 
-        public string GetRandomNext()
+        private List<NextWordList> GetNextWordListChain(IList<string> prefix)
         {
-            int idx = RandomHelper.Get(_totalNext) + 1;
-            foreach (KeyValuePair<string, int> kvp in Next)
+            if (prefix == null)
             {
-                idx = idx - kvp.Value;
-                if (idx <= 0)
-                    return kvp.Key;
+                return new List<NextWordList> {
+                    _next
+                };
+            }
+            List<NextWordList> chain = new List<NextWordList>(prefix.Count);
+
+            /* With a prefix "I love cats and"
+             * We want a chain starting from _next for the following:
+             * "I love cats and"
+             * "love cats and"
+             * "cats and"
+             * "and"
+             * ""
+             * */
+            for (int i = 0; i < prefix.Count; i++)
+            {
+                NextWordList next = _next;
+                for (int j = i; j < prefix.Count; j++)
+                {
+                    string p = prefix[j];
+                    if (!next.Prefixes.ContainsKey(p))
+                        break;
+                    next = next.Prefixes[p];
+                    chain.Add(next);
+                }
+            }
+            chain.Add(_next);
+            return chain;
+        }
+        
+        public void AddNext(IList<string> prefix, string word)
+        {
+            List<NextWordList> chain = CreateNextWordListChain(prefix);
+            foreach (NextWordList nwl in chain)
+                nwl.AddWord(word);
+        }
+
+        public string GetRandomNext(IList<string> prefix)
+        {
+            List<NextWordList> chain = GetNextWordListChain(prefix);
+            foreach (NextWordList link in chain)
+            {
+                string s = link.GetRandom();
+                if (!string.IsNullOrEmpty(s))
+                    return s;
             }
             throw new Exception("No children for " + Word);
         }
