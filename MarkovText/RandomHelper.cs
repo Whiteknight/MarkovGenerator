@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MarkovTest
+namespace MarkovText
 {
     public static class RandomHelper
     {

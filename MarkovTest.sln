@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkovTest", "MarkovTest\MarkovTest.csproj", "{DB1CB3F5-6578-463E-B8A7-4538C8999484}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkovText.Console", "MarkovTest\MarkovText.Console.csproj", "{DB1CB3F5-6578-463E-B8A7-4538C8999484}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkovText", "MarkovText\MarkovText.csproj", "{A26AA384-3FB8-45CB-B9B3-FB023B54625B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkovText.HeadlineGenerator", "MarkovText.HeadlineGenerator\MarkovText.HeadlineGenerator.csproj", "{545638A9-E04C-429D-8B27-2EF94DB27BEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +17,14 @@ Global
 		{DB1CB3F5-6578-463E-B8A7-4538C8999484}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB1CB3F5-6578-463E-B8A7-4538C8999484}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB1CB3F5-6578-463E-B8A7-4538C8999484}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A26AA384-3FB8-45CB-B9B3-FB023B54625B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A26AA384-3FB8-45CB-B9B3-FB023B54625B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A26AA384-3FB8-45CB-B9B3-FB023B54625B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A26AA384-3FB8-45CB-B9B3-FB023B54625B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{545638A9-E04C-429D-8B27-2EF94DB27BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{545638A9-E04C-429D-8B27-2EF94DB27BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{545638A9-E04C-429D-8B27-2EF94DB27BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{545638A9-E04C-429D-8B27-2EF94DB27BEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

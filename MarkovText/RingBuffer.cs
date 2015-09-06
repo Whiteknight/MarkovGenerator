@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace MarkovTest
+namespace MarkovText
 {
     public class RingBuffer
     {

@@ -1,4 +1,4 @@
-﻿namespace MarkovTest
+﻿namespace MarkovText
 {
     public static class Constants
     {

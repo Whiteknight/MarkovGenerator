@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DB1CB3F5-6578-463E-B8A7-4538C8999484}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{A26AA384-3FB8-45CB-B9B3-FB023B54625B}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MarkovTest</RootNamespace>
-    <AssemblyName>MarkovTest</AssemblyName>
+    <RootNamespace>MarkovText</RootNamespace>
+    <AssemblyName>MarkovText</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -41,20 +39,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IMarkovChain.cs" />
+    <Compile Include="IMarkovNode.cs" />
+    <Compile Include="MarkovChain.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="SimpleStringMarkovNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomHelper.cs" />
     <Compile Include="RingBuffer.cs" />
+    <Compile Include="SimpleMarkovChain.cs" />
     <Compile Include="Tokenizer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="SampleText.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MarkovTest
+namespace MarkovText
 {
     public class Tokenizer
     {
